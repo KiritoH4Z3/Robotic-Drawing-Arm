@@ -1,21 +1,15 @@
 #include <AccelStepper.h>
 
 // Define stepper motor connections and motor interface type
-#define BASE_STEP_PIN 2
-#define BASE_DIR_PIN 5
-#define SHOULDER_STEP_PIN 3
-#define SHOULDER_DIR_PIN 6
-#define ELBOW_STEP_PIN 4
-#define ELBOW_DIR_PIN 7
-#define WRIST_STEP_PIN 8
-#define WRIST_DIR_PIN 11
+#define X_AXIS_STEP_PIN 2
+#define X_AXIS_DIR_PIN 5
+#define Y_AXIS_STEP_PIN 3
+#define Y_AXIS_DIR_PIN 6
 #define PEN_STEP_PIN 9
 #define PEN_DIR_PIN 12
 
-AccelStepper baseMotor(AccelStepper::DRIVER, BASE_STEP_PIN, BASE_DIR_PIN);
-AccelStepper shoulderMotor(AccelStepper::DRIVER, SHOULDER_STEP_PIN, SHOULDER_DIR_PIN);
-AccelStepper elbowMotor(AccelStepper::DRIVER, ELBOW_STEP_PIN, ELBOW_DIR_PIN);
-AccelStepper wristMotor(AccelStepper::DRIVER, WRIST_STEP_PIN, WRIST_DIR_PIN);
+AccelStepper xAxisMotor(AccelStepper::DRIVER, X_AXIS_STEP_PIN, X_AXIS_DIR_PIN);
+AccelStepper yAxisMotor(AccelStepper::DRIVER, Y_AXIS_STEP_PIN, Y_AXIS_DIR_PIN);
 AccelStepper penMotor(AccelStepper::DRIVER, PEN_STEP_PIN, PEN_DIR_PIN);
 
 // Constants for motor configuration
@@ -24,14 +18,10 @@ const float drawingSpeed = 500.0; // Speed of drawing
 
 void setup() {
     Serial.begin(9600);
-    baseMotor.setMaxSpeed(drawingSpeed);
-    baseMotor.setAcceleration(1000.0);
-    shoulderMotor.setMaxSpeed(drawingSpeed);
-    shoulderMotor.setAcceleration(1000.0);
-    elbowMotor.setMaxSpeed(drawingSpeed);
-    elbowMotor.setAcceleration(1000.0);
-    wristMotor.setMaxSpeed(drawingSpeed);
-    wristMotor.setAcceleration(1000.0);
+    xAxisMotor.setMaxSpeed(drawingSpeed);
+    xAxisMotor.setAcceleration(1000.0);
+    yAxisMotor.setMaxSpeed(drawingSpeed);
+    yAxisMotor.setAcceleration(1000.0);
     penMotor.setMaxSpeed(drawingSpeed);
     penMotor.setAcceleration(1000.0);
 }
@@ -50,16 +40,14 @@ void loop() {
             int xTarget = x * stepsPerMM;
             int yTarget = y * stepsPerMM;
 
-            // Example of using motors to draw
-            baseMotor.moveTo(xTarget);
-            shoulderMotor.moveTo(yTarget);
+            // Move motors to the desired position
+            xAxisMotor.moveTo(xTarget);
+            yAxisMotor.moveTo(yTarget);
 
-            // Ensure all motors move to the desired position
-            while (baseMotor.distanceToGo() != 0 || shoulderMotor.distanceToGo() != 0) {
-                baseMotor.run();
-                shoulderMotor.run();
-                elbowMotor.run();
-                wristMotor.run();
+            // Ensure both motors move to the desired position
+            while (xAxisMotor.distanceToGo() != 0 || yAxisMotor.distanceToGo() != 0) {
+                xAxisMotor.run();
+                yAxisMotor.run();
                 penMotor.run();
             }
         } else if (command == 'P') {
